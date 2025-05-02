@@ -6,18 +6,22 @@ import DetailedDestination from './pages/DetailedDestination';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Tours from './pages/Tours';
+import Chat from './pages/Chat';
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/explore" element={<DestinationExplorer />} />
-        <Route path="/destination/:id" element={<DetailedDestination />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/tours" element={<Tours />} />
-      </Routes>
+      <div className="min-h-screen">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/explore" element={<DestinationExplorer />} />
+          <Route path="/destination/:id" element={<DetailedDestination />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/tours" element={<Tours />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
