@@ -2,7 +2,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styles from "./AccomodationSearch.module.css";
 import React, { useState, useEffect } from "react";
-
+import SearchHeader from '../components/SearchHeader';
+import FilterBar from '../components/FilterBar';
+import AccommodationCard from '../components/AccommodationCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import NoResults from '../components/NoResults';
+import WelcomeSection from '../components/WelcomeSection';
 
 const AccommodationSearch = () => {
   const [city, setCity] = useState("");
@@ -171,186 +177,37 @@ const AccommodationSearch = () => {
   };
   return (
     <div className={styles["stayFinderApp"]}>
-      <header className={styles["header"]}>
-        <div className={styles["headerContent"]}>
-          <h1 className={styles["appTitleAccom"]}>
-            Stay<span>Finder</span>
-          </h1>
-          <p className={styles["appTaglineAccom"]}>
-            Find your perfect accommodation anywhere in the world
-          </p>
+      <SearchHeader 
+        city={city}
+        setCity={setCity}
+        handleSubmit={handleSubmit}
+      />
 
-          <div className={styles["searchContainerAccom"]}>
-            <form onSubmit={handleSubmit} className={styles["searchFormAccom"]}>
-              <div className={styles["inputWrapperAccom"]}>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Where are you traveling to?"
-                  className={styles["cityInput"]}
-                />
-                <button
-                  type="submit"
-                  className={styles["searchButtonAccomodation"]}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      <div className={styles["filterBar"]}>
-        <div className={styles["accommodationTypeToggle"]}>
-          <button
-            className={`${styles.toggleButton} ${accommodationType === "hotels" ? styles.active : ""}`}
-            onClick={() => setAccommodationType("hotels")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 14h18v7H3z"></path>
-              <path d="M21 7V3h-6v4"></path>
-              <path d="M3 7V3h6v4"></path>
-              <path d="M3 7h18v7H3z"></path>
-            </svg>
-            Hotels
-          </button>
-          <button
-            className={`${styles.toggleButton} ${accommodationType === "airbnbs" ? styles.active : ""}`}
-            onClick={() => setAccommodationType("airbnbs")}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            Airbnbs
-          </button>
-        </div>
-
-        <div className={styles["priceFilter"]}>
-          <div className={styles["priceRange"]}>
-            <span>
-              Price Range: {formatPrice(priceRange[0])} -{" "}
-              {formatPrice(priceRange[1])}
-            </span>
-            <div className={styles["rangeInputs"]}>
-              <input
-                type="range"
-                min="0"
-                max="2000"
-                step="50"
-                value={priceRange[0]}
-                onChange={(e) => handlePriceRangeChange(e, 0)}
-                className={styles["rangeSlider"]}
-              />
-              <input
-                type="range"
-                min="0"
-                max="2000"
-                step="50"
-                value={priceRange[1]}
-                onChange={(e) => handlePriceRangeChange(e, 1)}
-                className={styles["rangeSlider"]}
-              />
-            </div>
-          </div>
-
-          <div className={styles["sortControls"]}>
-            <label htmlFor="sortSelect">Sort by price:</label>
-            <select
-              id="sortSelect"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className={styles["sortSelect"]}
-            >
-              <option value="asc">Low to High</option>
-              <option value="desc">High to Low</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <FilterBar
+        accommodationType={accommodationType}
+        setAccommodationType={setAccommodationType}
+        priceRange={priceRange}
+        handlePriceRangeChange={handlePriceRangeChange}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        formatPrice={formatPrice}
+      />
 
       <main className={styles["mainContent"]}>
-        {loading && (
-          <div className={styles["loadingContainer"]}>
-            <div className={styles["loadingAnimation"]}>
-              <div className={styles["dot dot1"]}></div>
-              <div className={styles["dot dot2"]}></div>
-              <div className={styles["dot dot3"]}></div>
-            </div>
-            <p>Finding perfect accommodations...</p>
-          </div>
-        )}
+        {loading && <LoadingSpinner />}
 
         {error && (
-          <div className={styles["errorMessage"]}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {is404 ? (
-                <>
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
-                  <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                  <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                </>
-              ) : (
-                <>
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="8" x2="12" y2="12"></line>
-                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </>
-              )}
-            </svg>
-            <p>{error}</p>
-            {is404 && (
-              <button 
-                className={styles.retryButton}
-                onClick={() => {
-                  setIs404(false);
-                  setError(null);
-                  setCity("");
-                }}
-              >
-                Try Another City
-              </button>
-            )}
-          </div>
+          <ErrorMessage 
+            error={error}
+            is404={is404}
+            onRetry={() => {
+              setIs404(false);
+              setError(null);
+              setCity("");
+            }}
+          />
         )}
+
         {!loading && accommodations.length > 0 && (
           <div className={styles["resultsSection"]}>
             <div className={styles["resultsHeader"]}>
@@ -366,149 +223,26 @@ const AccommodationSearch = () => {
 
             <div className={styles["accommodationsGrid"]}>
               {accommodations.map((accommodation) => (
-                <div
+                <AccommodationCard
                   key={accommodation.id}
-                  className={styles["accommodationCard"]}
-                  onClick={() => showAccommodationDetails(accommodation)}
-                >
-                  <div className={styles["accommodationImage"]}>
-                    {accommodation.image_links ? (
-                      <img
-                        src={accommodation.image_links[0]}
-                        alt={accommodation.name}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/api/placeholder/400/300";
-                        }}
-                      />
-                    ) : (
-                      <img
-                        src="/api/placeholder/400/300"
-                        alt="No image available"
-                      />
-                    )}
-                    {accommodation.available && (
-                      <div className={styles["statusIndicator available"]}>
-                        Available
-                      </div>
-                    )}
-                  </div>
-                  <div className={styles["accommodationContent"]}>
-                    <h3 className={styles["accommodationName"]}>
-                      {accommodation.name}
-                    </h3>
-                    <p className={styles["accommodationAddress"]}>
-                      {typeof accommodation.address === 'object' 
-                        ? `${accommodation.address.street}, ${accommodation.address.city}`
-                        : accommodation.address}
-                    </p>
-                    <div className={styles["accommodationStats"]}>
-                      <div className={styles["ratingContainer"]}>
-                        {getStarRating(accommodation.review_score, accommodation.review_count)}
-                        <span className={styles["reviewsCount"]}>
-                          ({accommodation.review_count || 0})
-                        </span>
-                      </div>
-                      <div className={styles["priceContainer"]}>
-                        <span className={styles["price"]}>
-                          {accommodationType === "hotels" ? formatPrice(accommodation.price,"PKR") : formatPrice(accommodation.price,"USD")}
-                        </span>
-                        <span className={styles["pricePeriod"]}>/night</span>
-                      </div>
-                    </div>
-                    <div className={styles["viewDetails"]}>
-                      <span>View Details</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
+                  accommodation={accommodation}
+                  accommodationType={accommodationType}
+                  formatPrice={formatPrice}
+                  onClick={showAccommodationDetails}
+                />
               ))}
             </div>
           </div>
         )}
 
-        {!loading &&
-          accommodations.length === 0 &&
-          searchPerformed &&
-          !error && (
-            <div className={styles["noResults"]}>
-              <div className={styles["noResultsIllustration"]}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  <line x1="11" y1="8" x2="11" y2="14"></line>
-                  <line x1="8" y1="11" x2="14" y2="11"></line>
-                </svg>
-              </div>
-              <h3>
-                No {accommodationType} found in {city}
-              </h3>
-              <p>
-                Try adjusting your price range or searching in a different city
-              </p>
-            </div>
-          )}
-
-        {!searchPerformed && !loading && (
-          <div className={styles["welcomeSection"]}>
-            <div className={styles["welcomeIllustration"]}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            </div>
-            <h2>Find Your Perfect Stay</h2>
-            <p>
-              Enter a city name and choose between hotels or Airbnbs to discover
-              accommodations worldwide
-            </p>
-            <div className={styles["welcomeTips"]}>
-              <div className={styles["tip"]}>
-                <div className={styles["tipIcon"]}>🏨</div>
-                <div className={styles["tipText"]}>
-                  Compare hotels and Airbnbs
-                </div>
-              </div>
-              <div className={styles["tip"]}>
-                <div className={styles["tipIcon"]}>💲</div>
-                <div className={styles["tiptext"]}>Filter by price range</div>
-              </div>
-              <div className={styles["tip"]}>
-                <div className={styles["tipIcon"]}>⭐</div>
-                <div className={styles["tipText"]}>
-                  Sort by rating or price
-                </div>
-              </div>
-            </div>
-          </div>
+        {!loading && accommodations.length === 0 && searchPerformed && !error && (
+          <NoResults 
+            city={city}
+            accommodationType={accommodationType}
+          />
         )}
+
+        {!searchPerformed && !loading && <WelcomeSection />}
       </main>
 
       {activeAccommodation && (

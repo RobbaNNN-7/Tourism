@@ -3,6 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Plane, Utensils, Search, Hotel, Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import './HomePage.css';
+import HeroSection from '../components/HeroSection';
+import PopularDestinations from '../components/PopularDestinations';
+import CategoriesSection from '../components/CategoriesSection';
+import ExperiencesSection from '../components/ExperiencesSection';
+import UpcomingEvents from '../components/UpcomingEvents';
+import TestimonialsSection from '../components/TestimonialsSection';
 
 const HomePage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -190,327 +196,23 @@ const HomePage = () => {
         </div>
       </header>
 
-      <section
-  className="hero-section flex flex-col items-center justify-center relative overflow-hidden bg-white"
-  style={{
-    minHeight: '90vh',
-    transition: 'background 0.7s cubic-bezier(0.4,0,0.2,1)',
-    background:
-      'linear-gradient(120deg, #f8fafc 0%, #e0f2fe 100%)'
-  }}
->
-  {/* Animated background shapes */}
-  <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
-    <svg width="100%" height="100%" viewBox="0 0 1440 320" className="absolute bottom-0 left-0">
-      <path
-        fill="#38bdf8"
-        fillOpacity="0.08"
-        d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
-      ></path>
-    </svg>
-    <div className="absolute top-10 right-10 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-60 animate-float-slow"></div>
-    <div className="absolute bottom-10 left-10 w-24 h-24 bg-blue-200 rounded-full blur-xl opacity-40 animate-float"></div>
-  </div>
-
-  <div className="hero-content container mx-auto px-4 md:px-6 relative z-10 text-center pt-36 pb-20 md:py-44">
-    <h1
-      className="text-5xl md:text-7xl font-extrabold mb-6 hero-title text-gray-900 transition-all duration-700 animate-fade-in-up"
-      style={{ letterSpacing: '-0.03em' }}
-    >
-      Discover the Magic of{' '}
-      <span className="gradient-text bg-gradient-to-r from-blue-500 via-cyan-400 to-green-400 bg-clip-text text-transparent animate-gradient-x">
-        Pakistan
-      </span>
-    </h1>
-    <p className="text-lg md:text-2xl mb-10 max-w-2xl mx-auto hero-subtitle text-gray-700 animate-fade-in-up delay-150">
-      From snow-capped mountains to ancient civilizations, embark on an unforgettable journey
-    </p>
-
-   
-     
-        
-        
-
-      
-
-    <div className="mt-12 flex flex-wrap justify-center gap-4 md:gap-8 animate-fade-in-up delay-500">
-  <Link to="/chat" className="feature-card hero-action-btn">
-    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 mb-3 shadow-lg">
-      <MapPin className="text-white" size={24} />
-    </div>
-    <p className="text-blue-700 font-semibold">Plan My Trip</p>
-  </Link>
-  <Link to="/flights" className="feature-card hero-action-btn">
-    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 mb-3 shadow-lg">
-      <Plane className="text-white" size={24} />
-    </div>
-    <p className="text-green-700 font-semibold">Find Flights</p>
-  </Link>
-  <Link to="/restaurants" className="feature-card hero-action-btn">
-    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-pink-400 to-yellow-400 mb-3 shadow-lg">
-      <Utensils className="text-white" size={24} />
-    </div>
-    <p className="text-pink-700 font-semibold">Find Restaurants</p>
-  </Link>
-  <Link to="/nearby-search" className="feature-card hero-action-btn">
-    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 mb-3 shadow-lg">
-      <Search className="text-white" size={24} />
-    </div>
-    <p className="text-purple-700 font-semibold">Explore Destinations</p>
-  </Link>
-  <Link to="/accommodation-search" className="feature-card hero-action-btn">
-    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-yellow-400 to-green-400 mb-3 shadow-lg">
-      <Hotel className="text-white" size={24} />
-    </div>
-    <p className="text-yellow-700 font-semibold">Accommodations</p>
-  </Link>
-</div>
-  </div>
-
-        
-        <div className="scroll-indicator">
-          <div className="mouse">
-            <div className="wheel"></div>
-          </div>
-          <p className="text-white text-sm mt-2">Scroll to explore</p>
-        </div>
-      </section>
+      {/* Hero Section */}
+      <HeroSection />
 
       {/* Popular Destinations */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div className="fade-in">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3">Popular Destinations</h2>
-              <p className="text-gray-600 max-w-2xl">Discover the most breathtaking and awe-inspiring places Pakistan has to offer</p>
-            </div>
-            <Link to="/nearby-search" className="flex items-center text-blue-600 mt-4 md:mt-0 hover:text-blue-800 transition group">
-              View all destinations
-              <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {popularDestinations.map((destination) => (
-              <div 
-                key={destination.id} 
-                className="destination-card rounded-xl overflow-hidden shadow-lg transition-all duration-500 hover:shadow-2xl cursor-pointer fade-in"
-              >
-                <div className="h-64 overflow-hidden relative">
-                  <img 
-                    src={destination.image} 
-                    alt={destination.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
-                  <div className="absolute top-3 right-3 bg-white bg-opacity-90 rounded-full py-1 px-3 flex items-center">
-                    <span className="text-yellow-500 mr-1">★</span>
-                    <span className="font-medium">{destination.rating}</span>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-2">{destination.name}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{destination.description}</p>
-                 
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PopularDestinations popularDestinations={popularDestinations} />
 
       {/* Categories Section */}
-      <section className="py-16 md:py-24 bg-gray-50">
-        <div className="container mx-auto px-4 md:px-6">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center fade-in">Explore by Category</h2>
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12 fade-in">
-            Pakistan offers diverse experiences from majestic mountains to pristine beaches and rich cultural heritage
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <div 
-                key={index}
-                className="category-card rounded-xl overflow-hidden shadow-lg transition-all duration-300 cursor-pointer fade-in"
-                onClick={() => setActiveCategory(activeCategory === index ? null : index)}
-              >
-                <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={category.image} 
-                    alt={category.name} 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center transition-opacity duration-300 hover:bg-opacity-20">
-                    <h3 className="text-white text-2xl font-bold">{category.name}</h3>
-                  </div>
-                </div>
-                
-                <div className={`bg-white overflow-hidden transition-all duration-300 ${activeCategory === index ? 'max-h-72' : 'max-h-0'}`}>
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold">Popular Places</h4>
-                      {activeCategory === index ? 
-                        <ChevronUp size={20} className="text-blue-600" /> : 
-                        <ChevronDown size={20} className="text-blue-600" />
-                      }
-                    </div>
-                    <ul className="space-y-2">
-                      {category.places.map((place, i) => (
-                        <li key={i} className="flex items-center">
-                          <MapPin size={16} className="text-blue-600 mr-2" />
-                          <span>{place}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Link 
-                      to={`/nearby-search`}
-                      className="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm"
-                    >
-                      View all {category.name}
-                      <ArrowRight size={16} className="ml-2" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategoriesSection categories={categories} activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
       {/* Experiences Section */}
-      <section className="py-16 md:py-24 bg-blue-600 text-white experiences-section">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="mb-12 text-center fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Unforgettable Experiences</h2>
-            <p className="max-w-3xl mx-auto opacity-90">
-              Immerse yourself in authentic Pakistani culture and create memories that will last a lifetime
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="experience-card fade-in">
-              <div className="rounded-xl overflow-hidden shadow-lg h-full bg-white bg-opacity-10 backdrop-blur-sm p-6 border border-white border-opacity-20">
-                <div className="icon-wrapper mb-6">
-                  <img src="https://img.icons8.com/fluency/96/mountain.png" alt="Mountain trekking" className="h-16 w-16" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Mountain Trekking</h3>
-                <p className="opacity-90 mb-5">
-                  Pakistan is home to five of the world's fourteen 8000+ meter peaks, including K2, the second highest mountain in the world.
-                </p>
-                
-              </div>
-            </div>
-            
-            <div className="experience-card fade-in">
-              <div className="rounded-xl overflow-hidden shadow-lg h-full bg-white bg-opacity-10 backdrop-blur-sm p-6 border border-white border-opacity-20">
-                <div className="icon-wrapper mb-6">
-                  <img src="https://img.icons8.com/fluency/96/dining-room.png" alt="Culinary tours" className="h-16 w-16" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Culinary Tours</h3>
-                <p className="opacity-90 mb-5">
-                  Experience the rich flavors of authentic Pakistani cuisine from street food to royal dishes that reflect centuries of culinary art.
-                </p>
-               
-              </div>
-            </div>
-            
-            <div className="experience-card fade-in">
-              <div className="rounded-xl overflow-hidden shadow-lg h-full bg-white bg-opacity-10 backdrop-blur-sm p-6 border border-white border-opacity-20">
-                <div className="icon-wrapper mb-6">
-                  <img src="https://img.icons8.com/fluency/96/dancing-party.png" alt="Cultural festivals" className="h-16 w-16" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Cultural Festivals</h3>
-                <p className="opacity-90 mb-5">
-                  Join the vibrant celebrations of Pakistan's diverse cultural festivals throughout the year, from Basant to the Shandur Polo Festival.
-                </p>
-               
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ExperiencesSection />
 
       {/* Upcoming Events */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 fade-in">Upcoming Events</h2>
-          <p className="text-gray-600 mb-12 max-w-2xl fade-in">
-            Plan your visit around these special cultural events and festivals
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {upcomingEvents.map((event, index) => (
-              <div 
-                key={index} 
-                className="event-card rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer fade-in"
-              >
-                <div className="h-48 overflow-hidden relative">
-                  <img 
-                    src={event.image} 
-                    alt={event.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
-                  <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs uppercase font-bold py-1 px-3 rounded-full">
-                    Upcoming
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-1">{event.name}</h3>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin size={16} className="mr-1" />
-                    <span className="text-sm">{event.location}</span>
-                  </div>
-                  <p className="text-blue-600 font-medium mb-4">{event.date}</p>
-                  <Link 
-                    to={`/chat`} 
-                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm"
-                  >
-                    Learn more
-                    <ArrowRight size={16} className="ml-2" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <UpcomingEvents upcomingEvents={upcomingEvents} />
 
       {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-gray-50">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-16 fade-in">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Traveler Stories</h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Hear from travelers who have experienced the beauty and hospitality of Pakistan
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <div 
-                key={testimonial.id} 
-                className="testimonial-card bg-white rounded-xl p-6 shadow-lg relative fade-in"
-              >
-                <div className="flex items-center mb-6">
-                  <img 
-                    src={testimonial.avatar} 
-                    alt={testimonial.name} 
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
-                  <div className="ml-4">
-                    <h3 className="font-semibold">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-600">{testimonial.location}</p>
-                  </div>
-                </div>
-                <div className="quote-marks absolute top-6 right-6 text-blue-100 text-6xl font-serif">❝</div>
-                <p className="text-gray-700 relative z-10 italic">{testimonial.text}</p>
-                <div className="mt-4 flex">
-                  <span className="text-yellow-500">★★★★★</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TestimonialsSection testimonials={testimonials} />
 
       {/* CTA Section */}
       <section className="cta-section py-16 md:py-28 text-white text-center relative overflow-hidden">
