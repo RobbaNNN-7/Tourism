@@ -11,6 +11,7 @@ import beachesImage from '../images/beaches.jpg';
 import mohenjoDaroImage from '../images/mohenjo-daro.jpg';
 import cultureImage from '../images/culture.jpg';
 import poloFestImage from '../images/polo_fest.jpg';
+import basantImage from '../images/basant.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -149,7 +150,7 @@ const HomePage = () => {
       name: 'Basant Kite Festival',
       date: 'February 18, 2026',
       location: 'Lahore',
-      image: 'https://images.unsplash.com/photo-1601979031925-424e53b6caaa?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+      image: basantImage
     },
     {
       name: 'Silk Route Festival',
