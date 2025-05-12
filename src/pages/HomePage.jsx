@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Plane, Utensils, Search, Hotel, Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import './HomePage.css';
 import hunzaImage from '../images/hunza.jpg';
+import lahoreFortImage from '../images/lahore_fort.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -64,7 +65,7 @@ const HomePage = () => {
     {
       id: 2,
       name: 'Lahore Fort',
-      image: 'https://images.unsplash.com/photo-1567000833363-e1e4e737221b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: lahoreFortImage,
       description: 'Explore the historical Mughal architecture and vibrant city life',
       rating: 4.7
     },
