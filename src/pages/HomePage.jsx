@@ -10,6 +10,7 @@ import makliImage from '../images/makri.jpg';
 import beachesImage from '../images/beaches.jpg';
 import mohenjoDaroImage from '../images/mohenjo-daro.jpg';
 import cultureImage from '../images/culture.jpg';
+import poloFestImage from '../images/polo_fest.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -142,7 +143,7 @@ const HomePage = () => {
       name: 'Shandur Polo Festival',
       date: 'July 7-9, 2025',
       location: 'Shandur Pass',
-      image: 'https://images.unsplash.com/photo-1580274455191-1c62238fa333?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+      image: poloFestImage
     },
     {
       name: 'Basant Kite Festival',
