@@ -27,14 +27,20 @@ const Restaurant = () => {
       setError('Please enter a city name');
       return;
     }
-
+  
     setLoading(true);
     setError(null);
-
+  
     try {
-      const response = await fetch(`http://localhost:8000/restaurants?city=${encodeURIComponent(city)}`);
+      const response = await fetch('http://localhost:8000/restaurant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ city }),
+      });
       const data = await response.json();
-
+  
       if (data.error) {
         setError(data.error);
         setRestaurants([]);
