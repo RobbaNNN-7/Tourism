@@ -12,7 +12,7 @@ import mohenjoDaroImage from '../images/mohenjo-daro.jpg';
 import cultureImage from '../images/culture.jpg';
 import poloFestImage from '../images/polo_fest.jpg';
 import basantImage from '../images/basant.jpg';
-import silkRouteImage from '../images/silk_route.jpg';
+import silkRouteImage from '../images/silk_route_festival.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -96,7 +96,7 @@ const HomePage = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'Sarah Johnson',
+      name: 'Sarah Akhtar',
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
       text: 'My trip to Pakistan was life-changing! This app made planning so easy and the recommendations were spot-on.',
       location: 'Visited Hunza Valley'
@@ -120,7 +120,7 @@ const HomePage = () => {
   const categories = [
     { 
       name: 'Mountains',
-      image: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: hunzaImage,
       places: ['K2 Base Camp', 'Fairy Meadows', 'Nanga Parbat', 'Deosai Plains']
     },
     { 
