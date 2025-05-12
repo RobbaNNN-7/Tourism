@@ -7,6 +7,7 @@ import hunzaImage from '../images/hunza.jpg';
 import lahoreFortImage from '../images/lahore_fort.jpg';
 import swatImage from '../images/swat.jpg';
 import makliImage from '../images/makri.jpg';
+import beachesImage from '../images/beaches.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -119,7 +120,7 @@ const HomePage = () => {
     },
     { 
       name: 'Beaches',
-      image: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: beachesImage,
       places: ['Kund Malir', 'Hawke\'s Bay', 'Clifton Beach', 'Gwadar']
     },
     { 
