@@ -12,6 +12,7 @@ import mohenjoDaroImage from '../images/mohenjo-daro.jpg';
 import cultureImage from '../images/culture.jpg';
 import poloFestImage from '../images/polo_fest.jpg';
 import basantImage from '../images/basant.jpg';
+import silkRouteImage from '../images/silk_route.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -156,7 +157,7 @@ const HomePage = () => {
       name: 'Silk Route Festival',
       date: 'August 20-25, 2025',
       location: 'Gilgit-Baltistan',
-      image: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+      image: silkRouteImage
     }
   ];
 
