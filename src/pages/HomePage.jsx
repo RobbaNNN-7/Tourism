@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Plane, Utensils, Search, Hotel, Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import './HomePage.css';
+import hunzaImage from '../images/hunza.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -56,7 +57,7 @@ const HomePage = () => {
     {
       id: 1,
       name: 'Hunza Valley',
-      image: 'src\images\hunza.jpg',
+      image: hunzaImage,
       description: 'Experience breathtaking mountain landscapes and rich local culture',
       rating: 4.9
     },
