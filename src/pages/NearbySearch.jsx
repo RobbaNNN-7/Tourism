@@ -1,6 +1,11 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { useState } from 'react';
 import styles from './nearbysearch.module.css';
+import SearchHeader from '../components/nearby/SearchHeader';
+import CategoryNav from '../components/nearby/CategoryNav';
+import LoadingState from '../components/nearby/LoadingState';
+import ErrorMessage from '../components/nearby/ErrorMessage';
+import ResultsSection from '../components/nearby/ResultsSection';
 
 const NearbySearch = () => {
   const [city, setCity] = useState('');
@@ -77,7 +82,7 @@ const NearbySearch = () => {
   };
 
   const getStarRating = (rating) => {
-    if (!rating) return <span className={styles.no-rating}>No ratings yet</span>;
+    if (!rating) return <span className={styles.no_rating}>No ratings yet</span>;
     
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -92,7 +97,6 @@ const NearbySearch = () => {
         stars.push(<span key={i} className={`${styles.star} ${styles.empty}`}>☆</span>);
       }
     }
-    
     
     return (
       <div className={styles.star_rating}>
@@ -126,7 +130,6 @@ const NearbySearch = () => {
     document.body.classList.remove('modal_open');
   };
 
-  // Get the current collection name for display
   const getCurrentCollectionName = () => {
     const collection = collections.find(c => c.id === selectedCollection);
     return collection ? collection.name : "Places";
@@ -139,174 +142,34 @@ const NearbySearch = () => {
 
   return (
     <div className={styles.wanderlust_app}>
-      <div className={styles.parallax_header}>
-        <div className={styles.header_content}>
-          <h1 className={styles.app_title}>Wander<span>Lust</span></h1>
-          <p className={styles.app_tagline}>Unveil the extraordinary in every corner of the world</p>
-          
-          <div className={styles.search_container}>
-            <form onSubmit={handleSubmit} className={styles.search_form}>
-              <div className={styles.input_wrapper}>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Where to next? Enter a city..."
-                  className={styles.city_input}
-                />
-                <button type="submit" className={styles.search_button}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      <SearchHeader
+        city={city}
+        setCity={setCity}
+        handleSubmit={handleSubmit}
+      />
 
-      <div className={styles.category_nav_container}>
-        <div className={styles.category_scroll}>
-          {collections.map((collection) => (
-            <button
-              key={collection.id}
-              className={`${styles['category_button']} ${selectedCollection === collection.id ? styles.active : ''}`}
-              onClick={() => {
-                setSelectedCollection(collection.id);
-                if (searchPerformed && city) fetchPlaces();
-              }}
-            >
-              <span className={styles.category_icon}>{collection.icon}</span>
-              <span className={styles.category_name}>{collection.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <CategoryNav
+        collections={collections}
+        selectedCollection={selectedCollection}
+        onCollectionSelect={(id) => {
+          setSelectedCollection(id);
+          if (searchPerformed && city) fetchPlaces();
+        }}
+      />
 
       <main className={styles.main_content}>
-        {loading && (
-          <div className={styles.loading_container}>
-            <div className={styles.loading_animation}>
-              <div className={`${styles.dot} ${styles.dot1}`}></div>
-              <div className={`${styles.dot} ${styles.dot2}`}></div>
-              <div className={`${styles.dot} ${styles.dot3}`}></div>
-            </div>
-            <p>Discovering amazing places...</p>
-          </div>
-        )}
-
-        {error && (
-          <div className={styles.error_message}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <p>{error}</p>
-          </div>
-        )}
-
-        {!loading && places.length > 0 && (
-          <div className={styles.results_section}>
-            <div className={styles.results_header}>
-              <h2>{getCurrentCollectionIcon()} {getCurrentCollectionName()} in <span className={styles.highlight_city}>{city}</span></h2>
-              <p className={styles.results_count}>{places.length} places found</p>
-            </div>
-            
-            <div className={styles.places_grid}>
-              {places.map((place) => (
-                <div 
-                  key={place.place_id} 
-                  className={styles.place_card}
-                  onClick={() => showPlaceDetails(place)}
-                >
-                  <div className={styles.place_image}>
-                    {place.photo_reference ? (
-                      <img 
-                        src={`http://localhost:8000/place-photo?photo_reference=${place.photo_reference}`} 
-                        alt={place.name}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/api/placeholder/400/300";
-                        }}
-                      />
-                    ) : (
-                      <img src="/api/placeholder/400/300" alt="No image available" />
-                    )}
-                    {place.open_now !== undefined && (
-                      <div className={`${styles['status_indicator']} ${place.open_now ? styles.open : styles.closed}`}>
-                        {place.open_now ? 'Open Now' : 'Closed'}
-                      </div>
-                    )}
-                  </div>
-                  <div className={styles.place_content}>
-                    <h3 className={styles.place_name}>{place.name}</h3>
-                    <p className={styles.place_address}>{place.address}</p>
-                    <div className={styles.place_stats}>
-                      <div className={styles.rating_container}>
-                        {getStarRating(place.rating)}
-                        <span className={styles.reviews_count}>({place.user_ratings_total || 0})</span>
-                      </div>
-                      <div className={styles.price_container}>
-                        {getPriceLevel(place.price_level)}
-                      </div>
-                    </div>
-                    <div className={styles.view_details}>
-                      <span>View Details</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {!loading && places.length === 0 && searchPerformed && !error && (
-          <div className={styles.no_results}>
-            <div className={styles.no_results_illustration}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                <line x1="11" y1="8" x2="11" y2="14"></line>
-                <line x1="8" y1="11" x2="14" y2="11"></line>
-              </svg>
-            </div>
-            <h3>No {getCurrentCollectionName().toLowerCase()} found in {city}</h3>
-            <p>Try searching for a different city or category</p>
-          </div>
-        )}
+        {loading && <LoadingState />}
+        {error && <ErrorMessage error={error} />}
         
-        {!searchPerformed && !loading && (
-          <div className={styles.welcome_section}>
-            <div className={styles.welcome_illustration}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-            </div>
-            <h2>Begin Your Journey</h2>
-            <p>Enter a city name and choose a category to discover amazing places around the world</p>
-            <div className={styles.welcome_tips}>
-              <div className={styles.tip}>
-                <div className={styles.tip_icon}>🌎</div>
-                <div className={styles.tip_text}>Search any city worldwide</div>
-              </div>
-              <div className={styles.tip}>
-                <div className={styles.tip_icon}>🔍</div>
-                <div className={styles.tip_text}>Explore 8 different categories</div>
-              </div>
-              <div className={styles.tip}>
-                <div className={styles.tip_icon}>📍</div>
-                <div className={styles.tip_text}>View details and locations</div>
-              </div>
-            </div>
-          </div>
+        {!loading && places.length > 0 && (
+          <ResultsSection
+            places={places}
+            city={city}
+            collectionIcon={getCurrentCollectionIcon()}
+            collectionName={getCurrentCollectionName()}
+            onPlaceClick={showPlaceDetails}
+            getStarRating={getStarRating}
+          />
         )}
       </main>
 

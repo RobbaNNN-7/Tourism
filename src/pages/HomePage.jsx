@@ -3,12 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Plane, Utensils, Search, Hotel, Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import './HomePage.css';
-import HeroSection from '../components/HeroSection';
-import PopularDestinations from '../components/PopularDestinations';
-import CategoriesSection from '../components/CategoriesSection';
-import ExperiencesSection from '../components/ExperiencesSection';
-import UpcomingEvents from '../components/UpcomingEvents';
-import TestimonialsSection from '../components/TestimonialsSection';
+import HeroSection from '../components/home/HeroSection';
+import PopularDestinations from '../components/home/PopularDestinations';
+import CategoriesSection from '../components/home/CategoriesSection';
+import ExperiencesSection from '../components/home/ExperiencesSection';
+import UpcomingEvents from '../components/home/UpcomingEvents';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import NavigationBar from '../components/home/NavigationBar';
+import CTASection from '../components/home/CTASection';
+import NewsletterSection from '../components/home/NewsletterSection';
 
 const HomePage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -150,115 +153,15 @@ const HomePage = () => {
 
   return (
     <div className="font-sans min-h-screen bg-white text-gray-900 overflow-hidden">
-      {/* Navigation Bar */}
-      <header className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
-        <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <div className="text-blue-600 text-2xl font-bold flex items-center">
-                <span className="gradient-text">Pakistan</span>
-                <span className="ml-1 text-black">Explorer</span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/chat" className="nav-link">Plan My Trip</Link>
-            <Link to="/flights" className="nav-link">Flights</Link>
-            <Link to="/accommodation-search" className="nav-link">Accomodations</Link>
-            <Link to="/nearby-search" className="nav-link">Explore Pakistan</Link>
-            <Link to="/restaurants" className="nav-link">Restaurants</Link>
-          </nav>
-
-          
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-blue-600 focus:outline-none"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className={`md:hidden bg-white shadow-lg overflow-hidden transition-all duration-300 ${isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            <Link to="/experiences" className="block py-2 hover:text-blue-600 transition">Experiences</Link>
-            <Link to="/culture" className="block py-2 hover:text-blue-600 transition">Culture</Link>
-            <Link to="/plan" className="block py-2 hover:text-blue-600 transition">Plan Your Trip</Link>
-            <Link to="/about" className="block py-2 hover:text-blue-600 transition">About Pakistan</Link>
-            
-            <div className="pt-4 flex flex-col space-y-3">
-             
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
+      <NavigationBar isScrolled={isScrolled} isMenuOpen={isMenuOpen} toggleMenu={toggleMenu} />
       <HeroSection />
-
-      {/* Popular Destinations */}
       <PopularDestinations popularDestinations={popularDestinations} />
-
-      {/* Categories Section */}
       <CategoriesSection categories={categories} activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
-
-      {/* Experiences Section */}
       <ExperiencesSection />
-
-      {/* Upcoming Events */}
       <UpcomingEvents upcomingEvents={upcomingEvents} />
-
-      {/* Testimonials */}
       <TestimonialsSection testimonials={testimonials} />
-
-      {/* CTA Section */}
-      <section className="cta-section py-16 md:py-28 text-white text-center relative overflow-hidden">
-        <div className="overlay absolute inset-0 bg-black bg-opacity-50 z-10"></div>
-        <div className="container mx-auto px-4 md:px-6 relative z-20 fade-in">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 max-w-3xl mx-auto">Ready to Experience the Wonder of Pakistan?</h2>
-          <p className="text-xl opacity-90 mb-10 max-w-2xl mx-auto">
-            From the peaks of the Karakoram to the shores of the Arabian Sea, your adventure awaits
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <Link to="/chat" className="px-8 py-3 bg-white text-blue-600 rounded-full font-medium hover:bg-opacity-90 transition duration-300 shadow-lg">
-              Plan My Journey
-            </Link>
-            <Link to="/nearby-search" className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-full font-medium hover:bg-white hover:bg-opacity-10 transition duration-300">
-              Browse Tourist Attractions
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-16 bg-blue-600 text-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="newsletter-container bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 rounded-2xl p-8 md:p-12 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between fade-in">
-            <div className="text-left mb-6 md:mb-0 md:mr-8 md:w-1/2">
-              <h3 className="text-2xl md:text-3xl font-bold mb-3">Stay Updated</h3>
-              <p className="opacity-90">Subscribe to our newsletter for travel tips, exclusive offers, and insights into Pakistan's hidden gems</p>
-            </div>
-            <div className="w-full md:w-1/2">
-              <div className="flex flex-col sm:flex-row">
-                <input 
-                  type="email" 
-                  placeholder="Your email address" 
-                  className="flex-1 px-4 py-3 rounded-l-full outline-none text-gray-800 focus:ring-2 focus:ring-blue-300"
-                />
-                <button className="mt-3 sm:mt-0 bg-blue-800 hover:bg-blue-900 text-white px-6 py-3 rounded-full sm:rounded-l-none transition duration-300">
-                  Subscribe
-                </button>
-              </div>
-              <p className="text-sm mt-3 opacity-80">
-                By subscribing, you agree to our Privacy Policy
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <CTASection />
+      <NewsletterSection />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white pt-16 pb-8">
@@ -360,8 +263,8 @@ const HomePage = () => {
           </div>
         </div>
       </footer>
-
-      </div>
-  );}
+    </div>
+  );
+};
 
 export default HomePage;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "../pages/AccomodationSearch.module.css";
-import StarRating from './StarRating';
+import StarRating from '../components/common/StarRating';
 
 const AccommodationCard = ({ accommodation, accommodationType, formatPrice, onClick }) => (
   <div

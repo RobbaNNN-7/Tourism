@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "../pages/AccomodationSearch.module.css";
+import styles from '../../pages/AccomodationSearch.module.css';
 
 const NoResults = ({ city, accommodationType }) => (
   <div className={styles["noResults"]}>

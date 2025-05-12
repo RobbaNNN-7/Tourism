@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "../pages/AccomodationSearch.module.css";
+import styles from '../../pages/AccomodationSearch.module.css';
 
 const ErrorMessage = ({ error, is404, onRetry }) => (
   <div className={styles["errorMessage"]}>

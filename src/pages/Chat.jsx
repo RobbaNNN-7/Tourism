@@ -1,5 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './journey_curator.css';
+import ChatMessages from '../components/chat/ChatMessages';
+import ChatInput from '../components/chat/ChatInput';
+import FlightCard from '../components/chat/trip-summary/FlightCard';
+import RestaurantCard from '../components/chat/trip-summary/RestaurantCard';
+import AttractionCard from '../components/chat/trip-summary/AttractionCard';
 
 // Message component for chat bubbles
 const Message = ({ message, sender }) => {
@@ -25,117 +30,6 @@ const TypingIndicator = () => {
   );
 };
 
-// Trip summary card components
-const FlightCard = ({ flight }) => {
-  return (
-    <div className="summary-card flight-card">
-      <div className="card-header">
-        <i className="fa-solid fa-plane"></i>
-        <h3>{flight.name || "Flight"}</h3>
-        {flight.is_best && <span className="best-badge">Best Value</span>}
-      </div>
-      <div className="card-content">
-        <div className="flight-time">
-          <div className="departure">
-            <span className="time">{flight.departure || "N/A"}</span>
-          </div>
-          <div className="flight-duration">
-            <span className="duration-line"></span>
-            <span>{flight.duration || "N/A"}</span>
-          </div>
-          <div className="arrival">
-            <span className="time">{flight.arrival || "N/A"}</span>
-          </div>
-        </div>
-        <div className="flight-details">
-          <p><strong>Stops:</strong> {flight.stops || "Direct"}</p>
-          <p className="price"><strong>Price:</strong> ${flight.price || "N/A"}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const RestaurantCard = ({ restaurant }) => {
-  return (
-    <div className="summary-card restaurant-card">
-      <div className="card-header">
-        <i className="fa-solid fa-utensils"></i>
-        <h3>{restaurant.name || "Restaurant"}</h3>
-      </div>
-      <div className="card-content">
-        <div className="restaurant-image">
-          {restaurant.image ? 
-            <img src={restaurant.image} alt={restaurant.name} /> : 
-            <div className="placeholder-img">No Image</div>
-          }
-        </div>
-        <div className="restaurant-details">
-          <p><strong>Address:</strong> {restaurant.address || "N/A"}</p>
-          <p><strong>Cuisine:</strong> {restaurant.types?.join(", ") || "Various"}</p>
-          <div className="rating">
-            <strong>Rating:</strong> 
-            <span className="stars">{renderStars(restaurant.rating || 0)}</span>
-            <span className="rating-value">({restaurant.rating || "N/A"})</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AttractionCard = ({ attraction }) => {
-  return (
-    <div className="summary-card attraction-card">
-      <div className="card-header">
-        <i className="fa-solid fa-landmark"></i>
-        <h3>{attraction.name || "Attraction"}</h3>
-      </div>
-      <div className="card-content">
-        <div className="attraction-image">
-          {attraction.photo_reference ? 
-            <img src={attraction.photo_reference} alt={attraction.name} /> : 
-            <div className="placeholder-img">No Image</div>
-          }
-        </div>
-        <div className="attraction-details">
-          <p><strong>Address:</strong> {attraction.address || "N/A"}</p>
-          <p><strong>Type:</strong> {attraction.types?.join(", ") || "Tourist Spot"}</p>
-          <div className="rating">
-            <strong>Rating:</strong>
-            <span className="stars">{renderStars(attraction.rating || 0)}</span>
-            <span className="rating-value">({attraction.rating || "N/A"}) from {attraction.user_ratings_total || 0} reviews</span>
-          </div>
-          {attraction.open_now !== undefined && 
-            <p className={`open-status ${attraction.open_now ? "open" : "closed"}`}>
-              {attraction.open_now ? "Open Now" : "Closed"}
-            </p>
-          }
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Helper function to render star ratings
-const renderStars = (rating) => {
-  const stars = [];
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
-  
-  for (let i = 0; i < 5; i++) {
-    if (i < fullStars) {
-      stars.push(<i key={i} className="fas fa-star"></i>);
-    } else if (i === fullStars && hasHalfStar) {
-      stars.push(<i key={i} className="fas fa-star-half-alt"></i>);
-    } else {
-      stars.push(<i key={i} className="far fa-star"></i>);
-    }
-  }
-  
-  return stars;
-};
-
 // Main App component
 function Chat() {
   const [messages, setMessages] = useState([]);
@@ -147,19 +41,9 @@ function Chat() {
   const [restaurants, setRestaurants] = useState([]);
   const [attractions, setAttractions] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
-  
-  const chatEndRef = useRef(null);
-
-  // Auto scroll to bottom of chat
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isTyping]);
 
   // Initialize the chat
   useEffect(() => {
-    // Show initial bot message
     handleBotResponse("Hello! I can help you plan your trip. Please tell me your destination.");
   }, []);
 
@@ -191,7 +75,6 @@ function Chat() {
         setCurrentStep(data.step);
       }
       
-      // Handle summary data if present
       // Handle summary data if present
       if (data.trip_summary) {
         setTripSummary(data.trip_summary);
@@ -252,93 +135,38 @@ function Chat() {
   };
 
   return (
-    <div className="app-container">
-      <div className="chat-container">
-        <div className="chat-header">
-          <h1>Travel Planner Bot</h1>
-          <button className="reset-button" onClick={handleReset}>
-            <i className="fas fa-redo"></i> New Trip
-          </button>
-        </div>
-        
-        <div className="chat-messages">
-          {messages.map((message, index) => (
-            <Message key={index} message={message.text} sender={message.sender} />
-          ))}
-          {isTyping && <TypingIndicator />}
-          <div ref={chatEndRef} />
-        </div>
-        
-        <form className="chat-input" onSubmit={handleSubmit}>
-          <input
-        type="text"
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        placeholder={showSummary ? "Ask anything about your trip..." : `Enter your ${currentStep}...`}
-        disabled={false}
-          />
-      <button type="submit" disabled={!inputText.trim()}>
-        <i className="fas fa-paper-plane"></i>
-      </button>
-        </form>
+    <div className="chat-container">
+      <div className="chat-header">
+        <h1>Journey Curator</h1>
+        <button onClick={handleReset} className="reset-button">
+          <i className="fas fa-redo"></i> Reset
+        </button>
       </div>
-      
+
+      <ChatMessages messages={messages} isTyping={isTyping} />
+
       {showSummary && (
-        <div className="summary-container">
-          <div className="summary-header">
-            <h2>Your Trip Summary</h2>
-          </div>
-          
-          <div className="summary-text">
-            <p>{tripSummary}</p>
-          </div>
-          
-          <div className="summary-section">
-            <h3>
-              <i className="fas fa-plane"></i> Available Flights
-            </h3>
-            <div className="cards-container">
-              {flights.length > 0 ? (
-                flights.map((flight, index) => (
-                  <FlightCard key={index} flight={flight} />
-                ))
-              ) : (
-                <p className="no-data">No flight information available</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="summary-section">
-            <h3>
-              <i className="fas fa-utensils"></i> Recommended Restaurants
-            </h3>
-            <div className="cards-container">
-              {restaurants.length > 0 ? (
-                restaurants.slice(0, 6).map((restaurant, index) => (
-                  <RestaurantCard key={index} restaurant={restaurant} />
-                ))
-              ) : (
-                <p className="no-data">No restaurant information available</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="summary-section">
-            <h3>
-              <i className="fas fa-landmark"></i> Tourist Attractions
-            </h3>
-            <div className="cards-container">
-              {attractions.length > 0 ? (
-                attractions.slice(0, 6).map((attraction, index) => (
-                  <AttractionCard key={index} attraction={attraction} />
-                ))
-              ) : (
-                <p className="no-data">No attraction information available</p>
-              )}
-            </div>
+        <div className="trip-summary">
+          <h2>Trip Summary</h2>
+          <div className="summary-cards">
+            {flights.map((flight, index) => (
+              <FlightCard key={index} flight={flight} />
+            ))}
+            {restaurants.map((restaurant, index) => (
+              <RestaurantCard key={index} restaurant={restaurant} />
+            ))}
+            {attractions.map((attraction, index) => (
+              <AttractionCard key={index} attraction={attraction} />
+            ))}
           </div>
         </div>
       )}
+
+      <ChatInput
+        inputText={inputText}
+        setInputText={setInputText}
+        handleSubmit={handleSubmit}
+      />
     </div>
   );
 }
