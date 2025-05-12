@@ -5,6 +5,7 @@ import { ArrowRight, MapPin, Plane, Utensils, Search, Hotel, Menu, X, ChevronDow
 import './HomePage.css';
 import hunzaImage from '../images/hunza.jpg';
 import lahoreFortImage from '../images/lahore_fort.jpg';
+import swatImage from '../images/swat.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -72,7 +73,7 @@ const HomePage = () => {
     {
       id: 3,
       name: 'Swat Valley',
-      image: 'https://images.unsplash.com/photo-1611822933265-53bef4ded263?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: swatImage,
       description: 'Discover the "Switzerland of Pakistan" with lush green hills',
       rating: 4.8
     },
