@@ -8,6 +8,7 @@ import lahoreFortImage from '../images/lahore_fort.jpg';
 import swatImage from '../images/swat.jpg';
 import makliImage from '../images/makri.jpg';
 import beachesImage from '../images/beaches.jpg';
+import mohenjoDaroImage from '../images/mohenjo-daro.jpg';
 import HeroSection from '../components/home/HeroSection';
 import PopularDestinations from '../components/home/PopularDestinations';
 import CategoriesSection from '../components/home/CategoriesSection';
@@ -125,7 +126,7 @@ const HomePage = () => {
     },
     { 
       name: 'Historical',
-      image: 'https://images.unsplash.com/photo-1567000833356-2a10fcad1656?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: mohenjoDaroImage,
       places: ['Badshahi Mosque', 'Mohenjo-daro', 'Taxila', 'Rohtas Fort']
     },
     { 
