@@ -56,7 +56,7 @@ const HomePage = () => {
     {
       id: 1,
       name: 'Hunza Valley',
-      image: 'https://images.unsplash.com/photo-1586522902072-5f35806258ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      image: 'src\images\hunza.jpg',
       description: 'Experience breathtaking mountain landscapes and rich local culture',
       rating: 4.9
     },
