@@ -21,7 +21,7 @@ app = FastAPI(lifespan=lifespan)
 # Middleware for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://tourism-omega-flame.vercel.app/"],
+    allow_origins=["https://tourism-aymyr73fa-abdul-moizs-projects-273549a9.vercel.app/"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
