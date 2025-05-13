@@ -18,15 +18,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-# Middleware for CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 ## FLIGHT_ROUTES ROUTERS
 app.add_api_route("/flight",endpoint=flight,methods=["POST"])
