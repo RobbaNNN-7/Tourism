@@ -1,9 +1,9 @@
-from fast_flights import FlightData, Passengers, Result, get_flights
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 from routes.connection import mongo_db, redis_client
+from flights_main.fast_flights import FlightData, Passengers, Result, get_flights
 
 
 # app = FastAPI()
