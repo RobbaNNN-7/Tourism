@@ -1,4 +1,4 @@
-from flights_main.fast_flights import FlightData, Passengers, Result, get_flights
+from fast_flights import FlightData, Passengers, Result, get_flights
 
 result: Result = get_flights(
 
