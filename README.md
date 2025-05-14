@@ -1,11 +1,11 @@
-# 🇵🇰 AI-Powered Tourism App – Pakistan Edition
+#  AI-Powered Tourism App – Pakistan Edition
 
 Your **one-stop travel assistant** for exploring Pakistan!  
 This app uses AI to plan your entire journey—from flights to food—so you don’t have to juggle 15 websites.
 
 ---
 
-## 🚀 Features
+##  Features
 
 - 🤖 **AI Chatbot** (LangChain): Just tell it your origin, destination, travel days & mood—it gives:
   - Full personalized itinerary (e.g., *Day 1: Visit Badshahi Masjid, eat at Cuckoo’s Den*)
