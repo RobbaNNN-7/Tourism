@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 from routes.connection import mongo_db, redis_client
-from fast_flights import FlightData, Passengers, Result, get_flights
+from flights_main.fast_flights import FlightData, Passengers, Result, get_flights
 
 
 

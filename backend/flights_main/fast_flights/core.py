@@ -18,7 +18,7 @@ def fetch(params: dict) -> Response:
 
 def get_flights_from_filter(
     filter: TFSData,
-    currency: str = "",
+    currency: str = "PKR",
     *,
     mode: Literal["common", "fallback", "force-fallback", "local"] = "common",
 ) -> Result:
