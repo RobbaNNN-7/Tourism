@@ -21,7 +21,7 @@
 
 """
 
-from fast_flights import FlightData, Passengers, Result, get_flights
+from flights_main.fast_flights import FlightData, Passengers, Result, get_flights
 from fastapi import FastAPI,Request
 from fastapi.responses import JSONResponse
 from langchain.prompts import ChatPromptTemplate
