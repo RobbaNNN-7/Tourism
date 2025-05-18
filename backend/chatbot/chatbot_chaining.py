@@ -417,7 +417,8 @@ session_manager=SessionManager()
 async def chat(request : Request):
     session_id=request.headers.get('X-Session-ID')
     data = await request.json()
-    user_input = data.get("user_input") ## LOGIC IN REACT
+    if (session_id): user_input = data.get("user_input")
+     ## LOGIC IN REACT
     ## USER INPUT IS CURRENTLY I ASSUME 1 WORD ONLY , 
     ## ITS LOGIC WILL BE FURTHER EXECUTED IN REACT WHERE 
     ## USER_INPUT WILL BE STRIPPED TO 1 WORD ONLY
