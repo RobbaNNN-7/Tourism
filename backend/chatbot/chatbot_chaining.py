@@ -526,11 +526,18 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
 
 from pymongo import MongoClient
 from typing import Optional
+import os
+from dotenv import load_dotenv
 
 
+load_dotenv()
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
-db = client['tourism']
+MONGO_URL = os.getenv('MONGO_URL')
+REDIS_URL = os.getenv('REDIS_URL')
+REDIS_TOKEN = os.getenv('REDIS_TOKEN')
+# MongoDB connection
+mongo_client = MongoClient(MONGO_URL, maxPoolSize=100, minPoolSize=10, serverSelectionTimeoutMS=5000)
+db = mongo_client['tourism']
 
 # Valid collections list
 COLLECTIONS = [
