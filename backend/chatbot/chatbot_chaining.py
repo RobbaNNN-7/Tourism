@@ -585,8 +585,19 @@ from typing import Optional
 
 
 # MongoDB connection
+import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
 
-db = mongo_db
+load_dotenv()
+# MongoDB connection
+MONGO_URL = os.getenv('MONGO_URL')
+REDIS_URL = os.getenv('REDIS_URL')
+REDIS_TOKEN = os.getenv('REDIS_TOKEN')
+# MongoDB connection
+mongo_client = MongoClient(MONGO_URL, maxPoolSize=100, minPoolSize=10, serverSelectionTimeoutMS=5000)
+db = mongo_client['tourism']
+
 
 # Valid collections list
 COLLECTIONS = [
