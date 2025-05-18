@@ -470,8 +470,8 @@ async def chat(request : Request):
         elif step == "origin":
             response = get_origin(user_input)
             if response["status"] == "success":
-                user_state["current_step"] = "days"
-                states["origin"] = user_input
+                session["current_step"] = "days"
+                session["states"]["origin"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -482,6 +482,7 @@ async def chat(request : Request):
             if response["status"] == "success":
                 user_state["current_step"] = "mood"
                 states["days"] = user_input
+                session["states"]["origin"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -492,6 +493,7 @@ async def chat(request : Request):
             if response["status"] == "success":
                 user_state["current_step"] = "route"
                 states["mood"] = user_input
+                session["states"]["origin"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -501,6 +503,7 @@ async def chat(request : Request):
             response = get_route(user_input)
             if response["status"] == "success":
                 states["route"] = user_input
+                session["states"]["origin"] = user_input
                 summary_response = generate_summary()
                 if summary_response["status"] == "success":
                     print("AFTER SUMMARY")
@@ -522,6 +525,7 @@ async def chat(request : Request):
         elif step == "chat":
             response = get_chat_response(user_input)
             user_state["current_step"] = "chat" ## REMAIN IN CHAT 
+            session["states"]["origin"] = user_input
 
             if response["status"] == "success":
                 return_json = response.get("output", "No response generated.")
