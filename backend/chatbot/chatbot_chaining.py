@@ -580,13 +580,13 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
     } 
 
 
-from pymongo import MongoClient
+from routes.connection import mongo_db
 from typing import Optional
 
 
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
-db = client['tourism']
+
+db = mongo_db
 
 # Valid collections list
 COLLECTIONS = [
