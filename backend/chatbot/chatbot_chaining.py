@@ -26,6 +26,7 @@ from fastapi import FastAPI,Request
 from fastapi.responses import JSONResponse
 from langchain.prompts import ChatPromptTemplate
 from .session_manager import SessionManager
+from datetime import datetime
 
 
 # from langchain.chains import LLMChain
@@ -273,7 +274,8 @@ def generate_summary():
     # Step 3: Fetch flights and format
     try:
         # You should use a real date here, not a hardcoded one!
-        flights_raw = fetch_flight_details("KHI", "ISB", "2025-05-30")
+        today_date = datetime.now().strftime("%d-%m-%Y")
+        flights_raw = fetch_flight_details("KHI", "ISB", today_date)
         flights = []
         for f in flights_raw.get("flights", []):
             flights.append({
@@ -532,6 +534,10 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
         passengers=Passengers(adults=2, children=1, infants_in_seat=0, infants_on_lap=0),
         fetch_mode="fallback",
     )
+    if not result:
+        print("NO RESULT FOUND")
+
+    print("IAM HERE")
     return {
         "flights": result.flights,
         "current_price": result.current_price
@@ -540,6 +546,7 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
 
 from pymongo import MongoClient
 from typing import Optional
+
 
 # MongoDB connection
 client = MongoClient("mongodb://localhost:27017/")
