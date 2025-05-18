@@ -573,6 +573,7 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
         print("NO RESULT FOUND")
 
     print("IAM HERE")
+    print(result)
     return {
         "flights": result.flights,
         "current_price": result.current_price
