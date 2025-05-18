@@ -460,6 +460,7 @@ async def chat(request : Request):
             response = get_destination(user_input)
             if response["status"] == "success":
                 session["current_step"] = "origin"
+                states["days"] = user_input
                 session["states"]["destination"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
@@ -471,6 +472,7 @@ async def chat(request : Request):
             response = get_origin(user_input)
             if response["status"] == "success":
                 session["current_step"] = "days"
+                states["days"] = user_input
                 session["states"]["origin"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
