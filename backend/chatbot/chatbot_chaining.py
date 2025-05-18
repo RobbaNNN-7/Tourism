@@ -233,6 +233,7 @@ def generate_summary():
     flights, restaurants, and tourist attractions.
     """
     # Step 1: Validate input states
+    print(states)
     for key, value in states.items():
         if value is None:
             return {"status": "failure", "message": f"{key} is None", "returnType": None}
@@ -460,7 +461,8 @@ async def chat(request : Request):
             response = get_destination(user_input)
             if response["status"] == "success":
                 session["current_step"] = "origin"
-                session["states"]["destination"] = user_input
+                states["destination"] = user_input
+                print(user_input)
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -471,7 +473,7 @@ async def chat(request : Request):
             response = get_origin(user_input)
             if response["status"] == "success":
                 session["current_step"] = "days"
-                session["states"]["origin"] = user_input
+                states["origin"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -482,7 +484,6 @@ async def chat(request : Request):
             if response["status"] == "success":
                 session["current_step"] = "mood"
                 states["days"] = user_input
-                session["states"]["days"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -493,7 +494,6 @@ async def chat(request : Request):
             if response["status"] == "success":
                 session["current_step"] = "route"
                 states["mood"] = user_input
-                session["states"]["mood"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -503,7 +503,6 @@ async def chat(request : Request):
             response = get_route(user_input)
             if response["status"] == "success":
                 states["route"] = user_input
-                session["states"]["route"] = user_input
                 summary_response = generate_summary()
                 if summary_response["status"] == "success":
                     print("AFTER SUMMARY")
