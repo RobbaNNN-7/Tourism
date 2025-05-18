@@ -419,8 +419,6 @@ session_manager=SessionManager()
 async def chat_init(request : Request):
     session_id=session_manager.create_session()
     return JSONResponse(content={
-                "message": "Hello! I can help you plan your trip. Please tell me your destination.",
-                "step": "destination",
                 "sessionId": session_id  # Changed from session_id to sessionId to match frontend
         })
 
