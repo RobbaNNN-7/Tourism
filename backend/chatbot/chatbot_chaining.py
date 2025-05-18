@@ -415,18 +415,17 @@ user_state = {
 # @app.post("/chat")
 
 session_manager=SessionManager()
-async def chat(request : Request):
-    try:
-        # Check if this is an initialization request (no body)
-        if request.method == "POST" and not request.headers.get("content-length"):
-            # Create new session
-            session_id = session_manager.create_session()
-            return JSONResponse(content={
+
+async def chat_init(request : Request):
+    session_id=session_manager.create_session()
+    return JSONResponse(content={
                 "message": "Hello! I can help you plan your trip. Please tell me your destination.",
                 "step": "destination",
                 "sessionId": session_id  # Changed from session_id to sessionId to match frontend
-            })
+        })
 
+async def chat(request : Request):
+    try:
         # Regular chat request
         data = await request.json()
         session_id = request.headers.get('X-Session-ID')
