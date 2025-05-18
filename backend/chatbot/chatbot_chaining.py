@@ -27,6 +27,7 @@ from fastapi.responses import JSONResponse
 from langchain.prompts import ChatPromptTemplate
 from .session_manager import SessionManager
 from datetime import datetime
+import json
 
 
 # from langchain.chains import LLMChain
@@ -415,113 +416,148 @@ user_state = {
 
 session_manager=SessionManager()
 async def chat(request : Request):
-    session_id=request.headers.get('X-Session-ID')
-    data = await request.json()
-    if (session_id): user_input = data.get("user_input")
-     ## LOGIC IN REACT
-    ## USER INPUT IS CURRENTLY I ASSUME 1 WORD ONLY , 
-    ## ITS LOGIC WILL BE FURTHER EXECUTED IN REACT WHERE 
-    ## USER_INPUT WILL BE STRIPPED TO 1 WORD ONLY
-    # Create new session if none exists
-    if not session_id or not session_manager.get_session(session_id):
-        session_id = session_manager.create_session()
+    try:
+        # Check if this is an initialization request (no body)
+        if request.method == "POST" and not request.headers.get("content-length"):
+            # Create new session
+            session_id = session_manager.create_session()
+            return JSONResponse(content={
+                "message": "Hello! I can help you plan your trip. Please tell me your destination.",
+                "step": "destination",
+                "sessionId": session_id  # Changed from session_id to sessionId to match frontend
+            })
+
+        # Regular chat request
+        data = await request.json()
+        session_id = request.headers.get('X-Session-ID')
+        user_input = data.get("user_input") if data else None
+
+        # Create new session if none exists
+        if not session_id or not session_manager.get_session(session_id):
+            session_id = session_manager.create_session()
+            return JSONResponse(content={
+                "message": "Hello! I can help you plan your trip. Please tell me your destination.",
+                "step": "destination",
+                "sessionId": session_id
+            })
+
+        # Get session data
+        session = session_manager.get_session(session_id)
+        if not session:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "Invalid session",
+                    "message": "Session expired or invalid. Please refresh the page."
+                }
+            )
+
+        step = session["current_step"]
+        states = session["states"]
+        system_message = session["system_message"]
+
+   
+   
+
+        if step == "destination":
+            response = get_destination(user_input)
+            if response["status"] == "success":
+                session["current_step"] = "origin"
+                session["states"]["destination"] = user_input
+                template = response["template"]
+                return_json = model.invoke(template).content
+            else:
+                return_json = f"Error: {response['message']} Please provide a valid destination."
+                
+
+        elif step == "origin":
+            response = get_origin(user_input)
+            if response["status"] == "success":
+                user_state["current_step"] = "days"
+                states["origin"] = user_input
+                template = response["template"]
+                return_json = model.invoke(template).content
+            else:
+                return_json = f"Error: {response['message']} Please provide a valid origin."
+        
+        elif step == "days":
+            response = get_days_of_travel(user_input)
+            if response["status"] == "success":
+                user_state["current_step"] = "mood"
+                states["days"] = user_input
+                template = response["template"]
+                return_json = model.invoke(template).content
+            else:
+                return_json = f"Error: {response['message']} Please provide a valid day."
+        
+        elif step == "mood":
+            response = get_mood(user_input)
+            if response["status"] == "success":
+                user_state["current_step"] = "route"
+                states["mood"] = user_input
+                template = response["template"]
+                return_json = model.invoke(template).content
+            else:
+                return_json = f"Error: {response['message']} Please provide a valid mood."
+
+        elif step == "route":
+            response = get_route(user_input)
+            if response["status"] == "success":
+                states["route"] = user_input
+                summary_response = generate_summary()
+                if summary_response["status"] == "success":
+                    print("AFTER SUMMARY")
+                    user_state["current_step"] = "chat"
+                    return JSONResponse(content={
+                        "message": summary_response["trip_summary"],
+                        "step": user_state["current_step"],
+                        "trip_summary": summary_response["trip_summary"],
+                        "flights": summary_response["flights"],
+                        "restaurants": summary_response["restaurants"],
+                        "tourist_attractions": summary_response["tourist_attractions"]
+                    })
+                else:
+                    return JSONResponse(content={
+                        "message": f"Error: {summary_response['message']} Please provide a valid summary.",
+                        "step": user_state["current_step"]
+                    })
+                
+        elif step == "chat":
+            response = get_chat_response(user_input)
+            user_state["current_step"] = "chat" ## REMAIN IN CHAT 
+
+            if response["status"] == "success":
+                return_json = response.get("output", "No response generated.")
+            else:
+                return_json = f"Error: {response['message']}"
+
+
+                
+        else:
+            return_json = f"Error: {response['message']} Please provide a valid route."
+
         return JSONResponse(content={
-            "message": "Hello! I can help you plan your trip. Please tell me your destination.",
-            "step": "destination",
+            "message": return_json,
+            "step": session["current_step"],
             "session_id": session_id
         })
-    
-    # Get session data
-    session = session_manager.get_session(session_id)
-    step = session["current_step"]
-    states = session["states"]
-    system_message = session["system_message"]
-
-   
-   
-
-    if step == "destination":
-        response = get_destination(user_input)
-        if response["status"] == "success":
-            session["current_step"] = "origin"
-            session["states"]["destination"] = user_input
-            template = response["template"]
-            return_json = model.invoke(template).content
-        else:
-            return_json = f"Error: {response['message']} Please provide a valid destination."
-            
-
-    elif step == "origin":
-        response = get_origin(user_input)
-        if response["status"] == "success":
-            user_state["current_step"] = "days"
-            states["origin"] = user_input
-            template = response["template"]
-            return_json = model.invoke(template).content
-        else:
-            return_json = f"Error: {response['message']} Please provide a valid origin."
-    
-    elif step == "days":
-        response = get_days_of_travel(user_input)
-        if response["status"] == "success":
-            user_state["current_step"] = "mood"
-            states["days"] = user_input
-            template = response["template"]
-            return_json = model.invoke(template).content
-        else:
-            return_json = f"Error: {response['message']} Please provide a valid day."
-    
-    elif step == "mood":
-        response = get_mood(user_input)
-        if response["status"] == "success":
-            user_state["current_step"] = "route"
-            states["mood"] = user_input
-            template = response["template"]
-            return_json = model.invoke(template).content
-        else:
-            return_json = f"Error: {response['message']} Please provide a valid mood."
-
-    elif step == "route":
-        response = get_route(user_input)
-        if response["status"] == "success":
-            states["route"] = user_input
-            summary_response = generate_summary()
-            if summary_response["status"] == "success":
-                print("AFTER SUMMARY")
-                user_state["current_step"] = "chat"
-                return JSONResponse(content={
-                    "message": summary_response["trip_summary"],
-                    "step": user_state["current_step"],
-                    "trip_summary": summary_response["trip_summary"],
-                    "flights": summary_response["flights"],
-                    "restaurants": summary_response["restaurants"],
-                    "tourist_attractions": summary_response["tourist_attractions"]
-                })
-            else:
-                return JSONResponse(content={
-                    "message": f"Error: {summary_response['message']} Please provide a valid summary.",
-                    "step": user_state["current_step"]
-                })
-            
-    elif step == "chat":
-        response = get_chat_response(user_input)
-        user_state["current_step"] = "chat" ## REMAIN IN CHAT 
-
-        if response["status"] == "success":
-            return_json = response.get("output", "No response generated.")
-        else:
-            return_json = f"Error: {response['message']}"
-
-
-            
-    else:
-        return_json = f"Error: {response['message']} Please provide a valid route."
-
-    return JSONResponse(content={
-        "message": return_json,
-        "step": session["current_step"],
-        "session_id": session_id
-    })
+    except json.JSONDecodeError:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Invalid JSON",
+                "message": "Please provide valid JSON data"
+            }
+        )
+    except Exception as e:
+        print(f"Error in chat endpoint: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "Server error",
+                "message": "An unexpected error occurred"
+            }
+        )
 
 
 
