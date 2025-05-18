@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './journey_curator.css';
+const REACT_APP_API_URL = process.env.REACT_APP_API_BASE_URL;
 
 // Message component for chat bubbles
 const Message = ({ message, sender }) => {
@@ -67,11 +68,11 @@ const RestaurantCard = ({ restaurant }) => {
         <div className="restaurant-image">
           {restaurant.image ? 
             <img
-            src={`http://localhost:8000/place-photo?photo_reference=${restaurant.image}`}
+            src={`${REACT_APP_API_URL}/place-photo?photo_reference=${restaurant.image}`}
             alt={restaurant.name}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = 'http://localhost:8000/random-photo';
+              e.target.src = `${REACT_APP_API_URL}/random-photo`;
             }}
           /> : 
             <div className="placeholder-img">No Image</div>
@@ -102,11 +103,11 @@ const AttractionCard = ({ attraction }) => {
         <div className="attraction-image">
           {attraction.photo_reference ? 
             <img
-            src={`http://localhost:8000/place-photo?photo_reference=${attraction.photo_reference}`}
+            src={`${REACT_APP_API_URL}/place-photo?photo_reference=${attraction.photo_reference}`}
             alt={attraction.name}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = 'http://localhost:8000/random-photo';
+              e.target.src = `${REACT_APP_API_URL}/random-photo`;
             }}
           /> : 
             <div className="placeholder-img">No Image</div>
@@ -131,6 +132,7 @@ const AttractionCard = ({ attraction }) => {
   );
 };
 
+
 // Helper function to render star ratings
 const renderStars = (rating) => {
   const stars = [];
@@ -152,6 +154,7 @@ const renderStars = (rating) => {
 
 // Main App component
 function Chat() {
+  // Existing state
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -161,52 +164,75 @@ function Chat() {
   const [restaurants, setRestaurants] = useState([]);
   const [attractions, setAttractions] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [isSessionActive, setIsSessionActive] = useState(false);
   
   const chatEndRef = useRef(null);
 
-  // Auto scroll to bottom of chat
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isTyping]);
+    const initializeSession = async () => {
+      try {
+        // Initialize session with backend
+        const response = await fetch(`${REACT_APP_API_URL}/chat/init`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        const data = await response.json();
+        if (data.sessionId) {
+          setSessionId(data.sessionId);
+          setIsSessionActive(true);
+        }
+        
+        // Show initial bot message
+        handleBotResponse("Hello! I can help you plan your trip. Please tell me your destination.");
+      } catch (error) {
+        console.error('Error initializing session:', error);
+        handleBotResponse("Sorry, I couldn't start a new session. Please try refreshing the page.");
+      }
+    };
 
-  // Initialize the chat
-  useEffect(() => {
-    // Show initial bot message
-    handleBotResponse("Hello! I can help you plan your trip. Please tell me your destination.");
+    initializeSession();
   }, []);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || !isSessionActive) return;
     
-    // Add user message to chat
     const userMessage = inputText.trim();
     setMessages(prev => [...prev, { text: userMessage, sender: 'user' }]);
     setInputText('');
     setIsTyping(true);
     
     try {
-      // Send user input to backend
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch(`${REACT_APP_API_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Session-ID': sessionId
         },
-        body: JSON.stringify({ user_input: userMessage }),
+        body: JSON.stringify({ 
+          user_input: userMessage,
+          session_id: sessionId
+        }),
       });
       
       const data = await response.json();
       
-      // Update current step
+      if (data.session_expired) {
+        setIsSessionActive(false);
+        handleBotResponse("Your session has expired. Please start a new conversation.");
+        return;
+      }
+      
+      // Rest of your existing handleSubmit logic
       if (data.step) {
         setCurrentStep(data.step);
       }
       
-      // Handle summary data if present
-      // Handle summary data if present
       if (data.trip_summary) {
         setTripSummary(data.trip_summary);
         setFlights(data.flights || []);
@@ -215,10 +241,8 @@ function Chat() {
         setShowSummary(true);
       }
 
-      // Only add bot message if it's not the summary (avoid duplicate)
       setTimeout(() => {
         setIsTyping(false);
-        // If this is a summary response, don't add it as a chat bubble
         if (!data.trip_summary) {
           handleBotResponse(data.message);
         }
@@ -239,8 +263,12 @@ function Chat() {
   // Reset the conversation
   const handleReset = async () => {
     try {
-      const response = await fetch('/reset', {
+      const response = await fetch(`${REACT_APP_API_URL}/reset`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Session-ID': sessionId
+        }
       });
       
       const data = await response.json();
@@ -254,7 +282,12 @@ function Chat() {
       setAttractions([]);
       setShowSummary(false);
       
-      // Add initial bot message
+      // Get new session ID
+      if (data.sessionId) {
+        setSessionId(data.sessionId);
+        setIsSessionActive(true);
+      }
+      
       setTimeout(() => {
         handleBotResponse(data.message);
       }, 500);
@@ -264,6 +297,7 @@ function Chat() {
       handleBotResponse("Sorry, I couldn't reset the conversation. Please refresh the page.");
     }
   };
+
 
   return (
     <div className="app-container">
