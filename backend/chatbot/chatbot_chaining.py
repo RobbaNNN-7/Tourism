@@ -297,6 +297,7 @@ def generate_summary(states):
     # Step 4: Fetch restaurants and format
     try:
         restaurants_raw = get_restaurant_by_city(destination)
+        print(restaurants_raw)
         restaurants = []
         for r in restaurants_raw:
             restaurants.append({
