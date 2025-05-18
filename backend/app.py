@@ -5,7 +5,7 @@ from routes.flight_routes import options_flight,flight
 from routes.restaurant_api import place_photo,random_photo,restaurant
 from routes.nearby_search import get_data
 from routes.hotel_search import get_hotel_data_for_location,get_airbnb_data_for_location
-from chatbot.chatbot_chaining import chat,reset_conversation
+from chatbot.chatbot_chaining import chat,reset_conversation,chat_init
 from routes.connection import ensure_indexes
 from contextlib import asynccontextmanager
 
@@ -41,6 +41,7 @@ app.add_api_route("/get-data",endpoint=get_data,methods=["POST","GET"])
 ## CHATBOT_CHAINING ROUTERS
 app.add_api_route("/chat",endpoint=chat,methods=["POST"])
 app.add_api_route("/reset",endpoint=reset_conversation,methods=["POST"])
+app.add_api_route("/chat/init",endpoint=chat_init,methods=["POST"])
 
 ## HOTELS
 app.add_api_route("/get-hotels",endpoint=get_hotel_data_for_location,methods=["GET"])
