@@ -404,7 +404,7 @@ from fastapi.middleware.cors import CORSMiddleware
 #     allow_headers=["*"],
 # )
 
-user_state = {
+session = {
     "current_step" : "destination",
     "inputs" : {}
 }
@@ -480,7 +480,7 @@ async def chat(request : Request):
         elif step == "days":
             response = get_days_of_travel(user_input)
             if response["status"] == "success":
-                user_state["current_step"] = "mood"
+                session["current_step"] = "mood"
                 states["days"] = user_input
                 session["states"]["origin"] = user_input
                 template = response["template"]
@@ -491,7 +491,7 @@ async def chat(request : Request):
         elif step == "mood":
             response = get_mood(user_input)
             if response["status"] == "success":
-                user_state["current_step"] = "route"
+                session["current_step"] = "route"
                 states["mood"] = user_input
                 session["states"]["origin"] = user_input
                 template = response["template"]
@@ -507,10 +507,10 @@ async def chat(request : Request):
                 summary_response = generate_summary()
                 if summary_response["status"] == "success":
                     print("AFTER SUMMARY")
-                    user_state["current_step"] = "chat"
+                    session["current_step"] = "chat"
                     return JSONResponse(content={
                         "message": summary_response["trip_summary"],
-                        "step": user_state["current_step"],
+                        "step": session["current_step"],
                         "trip_summary": summary_response["trip_summary"],
                         "flights": summary_response["flights"],
                         "restaurants": summary_response["restaurants"],
@@ -519,12 +519,12 @@ async def chat(request : Request):
                 else:
                     return JSONResponse(content={
                         "message": f"Error: {summary_response['message']} Please provide a valid summary.",
-                        "step": user_state["current_step"]
+                        "step": session["current_step"]
                     })
                 
         elif step == "chat":
             response = get_chat_response(user_input)
-            user_state["current_step"] = "chat" ## REMAIN IN CHAT 
+            session["current_step"] = "chat" ## REMAIN IN CHAT 
             session["states"]["origin"] = user_input
 
             if response["status"] == "success":
