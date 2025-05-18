@@ -421,7 +421,6 @@ async def chat(request : Request):
     ## USER INPUT IS CURRENTLY I ASSUME 1 WORD ONLY , 
     ## ITS LOGIC WILL BE FURTHER EXECUTED IN REACT WHERE 
     ## USER_INPUT WILL BE STRIPPED TO 1 WORD ONLY
-    session_id = data.get("session_id")
     # Create new session if none exists
     if not session_id or not session_manager.get_session(session_id):
         session_id = session_manager.create_session()
