@@ -226,14 +226,14 @@ def get_route(route):
 """
 
 
-def generate_summary():
+def generate_summary(states):
     """ 
     Gathers all user inputs, validates them, chains them, 
     and generates a comprehensive travel summary, including
     flights, restaurants, and tourist attractions.
     """
     # Step 1: Validate input states
-    print(states)
+    print("States in generate_summary:", states)  # Debug print
     for key, value in states.items():
         if value is None:
             return {"status": "failure", "message": f"{key} is None", "returnType": None}
@@ -461,20 +461,17 @@ async def chat(request : Request):
             response = get_destination(user_input)
             if response["status"] == "success":
                 session["current_step"] = "origin"
-                states["destination"] = user_input
-                session["states"]["destination"] = user_input
+                session["states"]["destination"] = user_input  # Update session states
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
                 return_json = f"Error: {response['message']} Please provide a valid destination."
                 
-
         elif step == "origin":
             response = get_origin(user_input)
             if response["status"] == "success":
                 session["current_step"] = "days"
-                states["origin"] = user_input
-                session["states"]["origin"] = user_input
+                session["states"]["origin"] = user_input  # Update session states
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -484,7 +481,7 @@ async def chat(request : Request):
             response = get_days_of_travel(user_input)
             if response["status"] == "success":
                 session["current_step"] = "mood"
-                states["days"] = user_input
+                session["states"]["days"] = user_input  # Update session states
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -494,7 +491,7 @@ async def chat(request : Request):
             response = get_mood(user_input)
             if response["status"] == "success":
                 session["current_step"] = "route"
-                states["mood"] = user_input
+                session["states"]["mood"] = user_input  # Update session states
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -503,10 +500,10 @@ async def chat(request : Request):
         elif step == "route":
             response = get_route(user_input)
             if response["status"] == "success":
-                states["route"] = user_input
-                summary_response = generate_summary()
+                session["states"]["route"] = user_input  # Update session states
+                # Use session states instead of global states
+                summary_response = generate_summary(session["states"])  # Pass session states
                 if summary_response["status"] == "success":
-                    print("AFTER SUMMARY")
                     session["current_step"] = "chat"
                     return JSONResponse(content={
                         "message": summary_response["trip_summary"],
