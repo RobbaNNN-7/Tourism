@@ -415,6 +415,7 @@ user_state = {
 
 session_manager=SessionManager()
 async def chat(request : Request):
+    session_id=request.headers('X-Session-ID')
     data = await request.json()
     user_input = data.get("user_input") ## LOGIC IN REACT
     ## USER INPUT IS CURRENTLY I ASSUME 1 WORD ONLY , 
