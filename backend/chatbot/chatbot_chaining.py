@@ -482,7 +482,7 @@ async def chat(request : Request):
             if response["status"] == "success":
                 session["current_step"] = "mood"
                 states["days"] = user_input
-                session["states"]["origin"] = user_input
+                session["states"]["days"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -493,7 +493,7 @@ async def chat(request : Request):
             if response["status"] == "success":
                 session["current_step"] = "route"
                 states["mood"] = user_input
-                session["states"]["origin"] = user_input
+                session["states"]["mood"] = user_input
                 template = response["template"]
                 return_json = model.invoke(template).content
             else:
@@ -503,7 +503,7 @@ async def chat(request : Request):
             response = get_route(user_input)
             if response["status"] == "success":
                 states["route"] = user_input
-                session["states"]["origin"] = user_input
+                session["states"]["route"] = user_input
                 summary_response = generate_summary()
                 if summary_response["status"] == "success":
                     print("AFTER SUMMARY")
