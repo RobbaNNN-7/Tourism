@@ -21,13 +21,11 @@
 
 """
 
-from flights_main.fast_flights import FlightData, Passengers, Result, get_flights
+from fast_flights import FlightData, Passengers, Result, get_flights
 from fastapi import FastAPI,Request
 from fastapi.responses import JSONResponse
 from langchain.prompts import ChatPromptTemplate
-from .session_manager import SessionManager
 from datetime import datetime
-import json
 
 
 # from langchain.chains import LLMChain
@@ -225,15 +223,47 @@ def get_route(route):
 
 """
 
+city_to_iata = {
+    "karachi": "KHI",            # Jinnah International Airport
+    "islamabad": "ISB",          # Islamabad International Airport
+    "lahore": "LHE",             # Allama Iqbal International Airport
+    "quetta": "UET",             # Quetta International Airport
+    "peshawar": "PEW",           # Bacha Khan International Airport
+    "multan": "MUX",             # Multan International Airport
+    "faisalabad": "LYP",         # Faisalabad International Airport
+    "sialkot": "SKT",            # Sialkot International Airport
+    "gilgit": "GIL",             # Gilgit Airport
+    "skardu": "KDU",             # Skardu Airport
+    "gwadar": "GWD",             # Gwadar International Airport
+    "sukkur": "SKZ",             # Sukkur Airport
+    "rahim yar khan": "RYK",     # Shaikh Zayed International Airport
+    "bahawalpur": "BHV",         # Bahawalpur Airport
+    "chitral": "CJL",            # Chitral Airport
+    "dalbandin": "DBA",          # Dalbandin Airport
+    "dera ghazi khan": "DEA",    # Dera Ghazi Khan Airport
+    "dera ismail khan": "DSK",   # Dera Ismail Khan Airport
+    "moenjodaro": "MJD",         # Moenjodaro Airport
+    "panjgur": "PJG",            # Panjgur Airport
+    "pasni": "PSI",              # Pasni Airport
+    "turbat": "TUK",             # Turbat International Airport
+    "zhob": "PZH",               # Zhob Airport
+    "parachinar": "PAJ",         # Parachinar Airport
+    "sawan": "SWN",              # Sawan Airport
+    "ormara": "ORW",             # Ormara Airport
+    "jinnah": "KHI",             # Alias for Karachi
+    "allama iqbal": "LHE",       # Alias for Lahore
+    "bacha khan": "PEW",         # Alias for Peshawar
+    
+}
 
-def generate_summary(states):
+
+def generate_summary():
     """ 
     Gathers all user inputs, validates them, chains them, 
     and generates a comprehensive travel summary, including
     flights, restaurants, and tourist attractions.
     """
     # Step 1: Validate input states
-    print("States in generate_summary:", states)  # Debug print
     for key, value in states.items():
         if value is None:
             return {"status": "failure", "message": f"{key} is None", "returnType": None}
@@ -277,19 +307,26 @@ def generate_summary(states):
     try:
         # You should use a real date here, not a hardcoded one!
         today_date = datetime.now().strftime("%d-%m-%Y")
-        flights_raw = fetch_flight_details("KHI", "ISB", today_date)
-        flights = []
-        for f in flights_raw.get("flights", []):
-            flights.append({
-                "is_best": getattr(f, "is_best", None),
-                "name": getattr(f, "name", None),
-                "departure": getattr(f, "departure", None),
-                "arrival": getattr(f, "arrival", None),
-                "duration": getattr(f, "duration", None),
-                "stops": getattr(f, "stops", None),
-                "price": getattr(f, "price", None),
-            })
-        current_price = flights_raw.get("current_price", None)
+        from_airport = city_to_iata.get(origin.lower())
+        to_airport = city_to_iata.get(destination.lower())
+
+        if not from_airport or not to_airport:
+            flights = []
+            current_price = None
+        else:
+            flights_raw = fetch_flight_details(from_airport, to_airport, today_date)
+            flights = []
+            for f in flights_raw.get("flights", []):
+                flights.append({
+                    "is_best": getattr(f, "is_best", None),
+                    "name": getattr(f, "name", None),
+                    "departure": getattr(f, "departure", None),
+                    "arrival": getattr(f, "arrival", None),
+                    "duration": getattr(f, "duration", None),
+                    "stops": getattr(f, "stops", None),
+                    "price": getattr(f, "price", None),
+                })
+            current_price = flights_raw.get("current_price", None)
     except Exception as e:
         flights = []
         current_price = None
@@ -297,7 +334,6 @@ def generate_summary(states):
     # Step 4: Fetch restaurants and format
     try:
         restaurants_raw = get_restaurant_by_city(destination)
-        print(restaurants_raw)
         restaurants = []
         for r in restaurants_raw:
             restaurants.append({
@@ -406,7 +442,7 @@ from fastapi.middleware.cors import CORSMiddleware
 #     allow_headers=["*"],
 # )
 
-session = {
+user_state = {
     "current_step" : "destination",
     "inputs" : {}
 }
@@ -415,148 +451,96 @@ session = {
 # current_step ={destination,origin,days,mood,route}
 
 # @app.post("/chat")
-
-session_manager=SessionManager()
-
-async def chat_init(request : Request):
-    session_id=session_manager.create_session()
-    return JSONResponse(content={
-                "sessionId": session_id  # Changed from session_id to sessionId to match frontend
-        })
-
 async def chat(request : Request):
-    try:
-        # Regular chat request
-        data = await request.json()
-        session_id = request.headers.get('X-Session-ID')
-        user_input = data.get("user_input") if data else None
+    data = await request.json()
+    user_input = data.get("user_input") ## LOGIC IN REACT
+    ## USER INPUT IS CURRENTLY I ASSUME 1 WORD ONLY , 
+    ## ITS LOGIC WILL BE FURTHER EXECUTED IN REACT WHERE 
+    ## USER_INPUT WILL BE STRIPPED TO 1 WORD ONLY
+    step = user_state["current_step"]
+    return_json = ""
 
-        # Create new session if none exists
-        if not session_id or not session_manager.get_session(session_id):
-            session_id = session_manager.create_session()
-            return JSONResponse(content={
-                "message": "Hello! I can help you plan your trip. Please tell me your destination.",
-                "step": "destination",
-                "sessionId": session_id
-            })
-
-        # Get session data
-        session = session_manager.get_session(session_id)
-        if not session:
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "error": "Invalid session",
-                    "message": "Session expired or invalid. Please refresh the page."
-                }
-            )
-
-        step = session["current_step"]
-        states = session["states"]
-        system_message = session["system_message"]
-
-   
-   
-
-        if step == "destination":
-            response = get_destination(user_input)
-            if response["status"] == "success":
-                session["current_step"] = "origin"
-                session["states"]["destination"] = user_input  # Update session states
-                template = response["template"]
-                return_json = model.invoke(template).content
-            else:
-                return_json = f"Error: {response['message']} Please provide a valid destination."
-                
-        elif step == "origin":
-            response = get_origin(user_input)
-            if response["status"] == "success":
-                session["current_step"] = "days"
-                session["states"]["origin"] = user_input  # Update session states
-                template = response["template"]
-                return_json = model.invoke(template).content
-            else:
-                return_json = f"Error: {response['message']} Please provide a valid origin."
-        
-        elif step == "days":
-            response = get_days_of_travel(user_input)
-            if response["status"] == "success":
-                session["current_step"] = "mood"
-                session["states"]["days"] = user_input  # Update session states
-                template = response["template"]
-                return_json = model.invoke(template).content
-            else:
-                return_json = f"Error: {response['message']} Please provide a valid day."
-        
-        elif step == "mood":
-            response = get_mood(user_input)
-            if response["status"] == "success":
-                session["current_step"] = "route"
-                session["states"]["mood"] = user_input  # Update session states
-                template = response["template"]
-                return_json = model.invoke(template).content
-            else:
-                return_json = f"Error: {response['message']} Please provide a valid mood."
-
-        elif step == "route":
-            response = get_route(user_input)
-            if response["status"] == "success":
-                session["states"]["route"] = user_input  # Update session states
-                # Use session states instead of global states
-                summary_response = generate_summary(session["states"])  # Pass session states
-                if summary_response["status"] == "success":
-                    session["current_step"] = "chat"
-                    return JSONResponse(content={
-                        "message": summary_response["trip_summary"],
-                        "step": session["current_step"],
-                        "trip_summary": summary_response["trip_summary"],
-                        "flights": summary_response["flights"],
-                        "restaurants": summary_response["restaurants"],
-                        "tourist_attractions": summary_response["tourist_attractions"]
-                    })
-                else:
-                    return JSONResponse(content={
-                        "message": f"Error: {summary_response['message']} Please provide a valid summary.",
-                        "step": session["current_step"]
-                    })
-                
-        elif step == "chat":
-            response = get_chat_response(user_input)
-            session["current_step"] = "chat" ## REMAIN IN CHAT 
-            session["states"]["origin"] = user_input
-
-            if response["status"] == "success":
-                return_json = response.get("output", "No response generated.")
-            else:
-                return_json = f"Error: {response['message']}"
-
-
-                
+    if step == "destination":
+        response = get_destination(user_input)
+        if response["status"] == "success":
+            user_state["current_step"] = "origin"
+            states["destination"] = user_input
+            template = response["template"]
+            return_json = model.invoke(template).content
         else:
-            return_json = f"Error: {response['message']} Please provide a valid route."
+            return_json = f"Error: {response['message']} Please provide a valid destination."
+            
 
-        return JSONResponse(content={
-            "message": return_json,
-            "step": session["current_step"],
-            "session_id": session_id
-        })
-    except json.JSONDecodeError:
-        return JSONResponse(
-            status_code=400,
-            content={
-                "error": "Invalid JSON",
-                "message": "Please provide valid JSON data"
-            }
-        )
-    except Exception as e:
-        print(f"Error in chat endpoint: {str(e)}")
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": "Server error",
-                "message": "An unexpected error occurred"
-            }
-        )
+    elif step == "origin":
+        response = get_origin(user_input)
+        if response["status"] == "success":
+            user_state["current_step"] = "days"
+            states["origin"] = user_input
+            template = response["template"]
+            return_json = model.invoke(template).content
+        else:
+            return_json = f"Error: {response['message']} Please provide a valid origin."
+    
+    elif step == "days":
+        response = get_days_of_travel(user_input)
+        if response["status"] == "success":
+            user_state["current_step"] = "mood"
+            states["days"] = user_input
+            template = response["template"]
+            return_json = model.invoke(template).content
+        else:
+            return_json = f"Error: {response['message']} Please provide a valid day."
+    
+    elif step == "mood":
+        response = get_mood(user_input)
+        if response["status"] == "success":
+            user_state["current_step"] = "route"
+            states["mood"] = user_input
+            template = response["template"]
+            return_json = model.invoke(template).content
+        else:
+            return_json = f"Error: {response['message']} Please provide a valid mood."
+
+    elif step == "route":
+        response = get_route(user_input)
+        if response["status"] == "success":
+            states["route"] = user_input
+            summary_response = generate_summary()
+            if summary_response["status"] == "success":
+                print("AFTER SUMMARY")
+                user_state["current_step"] = "chat"
+                return JSONResponse(content={
+                    "message": summary_response["trip_summary"],
+                    "step": user_state["current_step"],
+                    "trip_summary": summary_response["trip_summary"],
+                    "flights": summary_response["flights"],
+                    "restaurants": summary_response["restaurants"],
+                    "tourist_attractions": summary_response["tourist_attractions"]
+                })
+            else:
+                return JSONResponse(content={
+                    "message": f"Error: {summary_response['message']} Please provide a valid summary.",
+                    "step": user_state["current_step"]
+                })
+            
+    elif step == "chat":
+        response = get_chat_response(user_input)
+        user_state["current_step"] = "chat" ## REMAIN IN CHAT 
+
+        if response["status"] == "success":
+            return_json = response.get("output", "No response generated.")
+        else:
+            return_json = f"Error: {response['message']}"
+
+
+            
+    else:
+        return_json = f"Error: {response['message']} Please provide a valid route."
+
+    return JSONResponse(content={
+        "message": return_json,
+        "step": user_state["current_step"]
+    })
 
 
 
@@ -574,21 +558,17 @@ def fetch_flight_details(from_airport: str, to_airport: str, date: str):
         print("NO RESULT FOUND")
 
     print("IAM HERE")
-    print(result)
     return {
         "flights": result.flights,
         "current_price": result.current_price
     } 
 
 
-from routes.connection import mongo_db
+from pymongo import MongoClient
 from typing import Optional
-
-
-# MongoDB connection
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
+
 
 load_dotenv()
 # MongoDB connection
@@ -598,7 +578,6 @@ REDIS_TOKEN = os.getenv('REDIS_TOKEN')
 # MongoDB connection
 mongo_client = MongoClient(MONGO_URL, maxPoolSize=100, minPoolSize=10, serverSelectionTimeoutMS=5000)
 db = mongo_client['tourism']
-
 
 # Valid collections list
 COLLECTIONS = [
@@ -656,17 +635,20 @@ def get_data_sync(collection_name: str, city: str):
         
 
 # @app.post("/reset")
-async def reset_conversation(request: Request):
-    data = await request.json()
-    session_id = data.get("session_id")
+async def reset_conversation():
+    global user_state, states, system_message
     
-    # Create new session
-    new_session_id = session_manager.create_session()
+    user_state = {
+        "current_step": "destination",
+        "inputs": {}
+    }
+    
+    states = {}
+    system_message = []
     
     return JSONResponse(content={
-        "message": "Hello! I can help you plan your trip. Please tell me your destination.",
-        "step": "destination",
-        "session_id": new_session_id
+        "message": "Hello! I can help you plan your trip. Please tell me your destination.", 
+        "step": "destination"
     })
         
 
